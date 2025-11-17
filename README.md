@@ -1,8 +1,8 @@
 # RF-autoResNLS 代码实现说明
 
-> **项目说明**：本项目包含 **RF-autoResNLS** 模型的 PyTorch 实现代码。这是一个混合深度学习模型，结合了 **ResNet**、**BiLSTM** 和 **Random Forest**（随机森林）的自适应权重机制，用于股票收盘价的时间序列预测。
+> **项目说明**：本项目包含 **RF-autoResNLS** 模型的 PyTorch 实现代码。这是一个混合深度学习模型，结合了 **ResNet**、**BiLSTM** 和 **Random Forest**的自适应权重机制，用于股票收盘价的时间序列预测。
 
-## 🛠️ 环境依赖 (Requirements)
+## 🛠️ Requirements
 
 本项目基于 Python 3 开发。运行代码前，请确保安装以下核心库：
 
@@ -18,11 +18,11 @@
 pip install torch pandas numpy scikit-learn matplotlib baostock
 ```
 
-## 📂 代码结构说明 (Code Structure)
+## 📂 Code Structure
 
 Jupyter Notebook (`rf-autoresnls.ipynb`) 的执行流程如下：
 
-### 1\. 数据获取与预处理 (Data Preprocessing)
+### 1\. Data Preprocessing
 
   * **数据源**: 使用 `baostock` API 自动下载上证综指 (`sh.000001`) 的历史 K 线数据。
       * *时间范围*: 1992-01-01 至 2024-01-31。
@@ -32,14 +32,14 @@ Jupyter Notebook (`rf-autoresnls.ipynb`) 的执行流程如下：
       * `x`: 过去 5 个交易日的数据。
       * `y`: 第 6 个交易日的收盘价。
 
-### 2\. 权重初始化 (Weight Initialization via Random Forest)
+### 2\. Weight Initialization via Random Forest
 
 在构建神经网络之前，代码首先训练一个 `RandomForestRegressor`：
 
   * **目的**: 计算过去 5 天（输入序列）对第 6 天价格的特征重要性 (Feature Importance)。
   * **作用**: 这些权重被归一化后，作为参数传递给 ResNLS 模型，用于在残差连接中自适应地调整 CNN 提取特征的权重。
 
-### 3\. 模型定义 (Model Architecture)
+### 3\. Model Architecture
 
 模型类 `ResNLS` 定义在 PyTorch 中，主要包含两部分：
 
@@ -52,27 +52,27 @@ Jupyter Notebook (`rf-autoresnls.ipynb`) 的执行流程如下：
       * 用于捕捉时间序列的长短期依赖。
   * **全连接层**: 输出最终预测值。
 
-### 4\. 模型训练 (Training)
+### 4\. Training
 
   * **优化器**: Adam (Learning rate = 1e-3, Weight decay = 1e-5)。
   * **损失函数**: MSELoss (均方误差)。
   * **学习率调度**: `ReduceLROnPlateau` (当 Loss 不再下降时自动降低学习率)。
   * **参数**: Epochs = 50, Batch Size = 64。
 
-### 5\. 验证与可视化 (Validation & Visualization)
+### 5\. Validation & Visualization
 
   * 模型在测试集上进行评估。
   * 输出评估指标：**MAE**, **MSE**, **RMSE**。
   * 绘制损失函数曲线 (Train vs Validation Loss) 和 股价预测对比图 (Actual vs Predicted)。
 
-## 🚀 快速开始 (Quick Start)
+## 🚀 Quick Start
 
 1.  克隆本仓库或下载 `rf-autoresnls.ipynb`。
 2.  确保已安装上述依赖库。
 3.  直接运行 Jupyter Notebook 的所有单元格。
       * *注意：首次运行需要联网下载 Baostock 数据。*
 
-## 📊 结果展示 (Results)
+## 📊 Results
 
 
 
@@ -94,7 +94,7 @@ Jupyter Notebook (`rf-autoresnls.ipynb`) 的执行流程如下：
 
 ## 📝 核心代码片段
 
-**自适应权重计算 (Random Forest):**
+**Random Forest:**
 
 ```python
 rf = RandomForestRegressor(n_estimators=100, random_state=42)
@@ -103,7 +103,7 @@ weight = rf.feature_importances_
 # 权重归一化处理...
 ```
 
-**ResNLS 前向传播逻辑:**
+**ResNLS Forwarding:**
 
 ```python
 def forward(self, x):
